@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mysql *)",
+      "Bash(where mysql *)",
+      "Read(//c/Program Files/**)",
+      "Read(//c/ProgramData/**)",
+      "Read(//c/xampp/mysql/bin/**)",
+      "Bash(ls /c/wamp*/bin/mysql/mysql*/bin/mysql.exe)",
+      "Bash(cmd.exe //c \"where mysql\")",
+      "Bash(reg query *)",
+      "Bash(powershell.exe *)",
+      "Bash(D:/mysql-8.0.46-winx64/mysql-8.0.46-winx64/bin/mysql.exe *)",
+      "Bash(\"D:/apache-maven-3.9.9-bin/apache-maven-3.9.9/bin/mvn.cmd\" compile *)",
+      "Bash(cmd.exe //c \"where mvn\")",
+      "Bash(ls /d/apache-maven*/bin/mvn.cmd)",
+      "Bash(ls /c/apache-maven*/bin/mvn.cmd)",
+      "Bash(\"D:/apache-maven-3.9.16-bin/apache-maven-3.9.16/bin/mvn.cmd\" compile *)",
+      "Bash(\"D:/apache-maven-3.9.16-bin/apache-maven-3.9.16/bin/mvn.cmd\" clean *)",
+      "Bash(\"D:/apache-maven-3.9.16-bin/apache-maven-3.9.16/bin/mvn.cmd\" tomcat7:run)",
+      "Bash(curl -s http://localhost:8080/)",
+      "Bash(java *)"
+    ]
+  }
+}
