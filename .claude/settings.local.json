@@ -21,7 +21,8 @@
       "Bash(curl -s http://localhost:8080/)",
       "Bash(java *)",
       "Bash(git *)",
-      "Bash(mvn compile *)"
+      "Bash(mvn compile *)",
+      "Bash(mvn -q compile)"
     ]
   }
 }

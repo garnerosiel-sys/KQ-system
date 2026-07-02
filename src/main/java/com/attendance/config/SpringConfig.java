@@ -5,7 +5,6 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -59,12 +58,6 @@ public class SpringConfig {
     @Value("${jdbc.maxWait}")
     private long maxWait;
 
-    /** 必须 static，确保 @Value 注入前加载 properties */
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
     // ==================== Druid 数据源 ====================
 
     @Bean
@@ -105,8 +98,13 @@ public class SpringConfig {
         return factory;
     }
 
+    /**
+     * 必须 static。MapperScannerConfigurer 是 BeanDefinitionRegistryPostProcessor，
+     * 若声明为非 static @Bean，会迫使 SpringConfig 在后置处理器阶段被提前实例化，
+     * 导致 @Value 字段来不及注入（maxActive 等保持默认值 0）。
+     */
     @Bean
-    public MapperScannerConfigurer mapperScannerConfigurer() {
+    public static MapperScannerConfigurer mapperScannerConfigurer() {
         MapperScannerConfigurer scanner = new MapperScannerConfigurer();
         scanner.setBasePackage("com.attendance.mapper");
         scanner.setSqlSessionFactoryBeanName("sqlSessionFactory");
