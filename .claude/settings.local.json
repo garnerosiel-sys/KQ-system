@@ -19,7 +19,9 @@
       "Bash(\"D:/apache-maven-3.9.16-bin/apache-maven-3.9.16/bin/mvn.cmd\" clean *)",
       "Bash(\"D:/apache-maven-3.9.16-bin/apache-maven-3.9.16/bin/mvn.cmd\" tomcat7:run)",
       "Bash(curl -s http://localhost:8080/)",
-      "Bash(java *)"
+      "Bash(java *)",
+      "Bash(git *)",
+      "Bash(mvn compile *)"
     ]
   }
 }
