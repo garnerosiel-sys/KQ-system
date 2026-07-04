@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.attendance.mapper.CompanyMapper">
+
+    <resultMap id="companyMap" type="com.attendance.entity.Company">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="centerLatitude" column="center_latitude"/>
+        <result property="centerLongitude" column="center_longitude"/>
+        <result property="radius" column="radius"/>
+        <result property="address" column="address"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectDefault" resultMap="companyMap">
+        SELECT * FROM t_company LIMIT 1
+    </select>
+
+</mapper>

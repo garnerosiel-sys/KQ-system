@@ -1,23 +1,22 @@
-﻿package com.attendance.config;
+package com.attendance.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-
 
 import javax.sql.DataSource;
 
 /**
- * Spring 鏍瑰鍣ㄩ厤缃紙鏇夸唬 applicationContext.xml锛?
+ * Spring 根容器配置（替代 applicationContext.xml）
  * <p>
- * 绠＄悊 Service銆丮apper銆佹暟鎹簮銆佷簨鍔＄瓑涓棿灞傜粍浠躲€?
- * MVC 灞傜粍浠讹紙Controller / 鎷︽埅鍣?/ 寮傚父澶勭悊鍣級浜ょ粰 {@link WebMvcConfig} 绠＄悊銆?
+ * 管理 Service、Mapper、数据源、事务等中间层组件。
+ * MVC 层组件（Controller / 拦截器 / 异常处理器）交给 {@link WebMvcConfig} 管理。
  * </p>
  *
  * @author KQ-system
@@ -60,7 +59,13 @@ public class SpringConfig {
     @Value("${jdbc.maxWait}")
     private long maxWait;
 
-    // ==================== Druid 鏁版嵁婧?====================
+    /** 必须 static，确保 @Value 注入前加载 properties */
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+
+    // ==================== Druid 数据源 ====================
 
     @Bean
     public DataSource dataSource() {
@@ -90,7 +95,7 @@ public class SpringConfig {
         SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setTypeAliasesPackage(typeAliasesPackage);
-        // 灏?classpath:mapper/*.xml 瑙ｆ瀽涓?Resource[] 骞舵敞鍏?
+        // 将 classpath:mapper/*.xml 解析为 Resource[] 并注入
         factory.setMapperLocations(
                 new PathMatchingResourcePatternResolver().getResources(mapperLocations));
 
@@ -100,25 +105,18 @@ public class SpringConfig {
         return factory;
     }
 
-    /**
-     * 蹇呴』 static銆侻apperScannerConfigurer 鏄?BeanDefinitionRegistryPostProcessor锛?
-     * 鑻ュ０鏄庝负闈?static @Bean锛屼細杩娇 SpringConfig 鍦ㄥ悗缃鐞嗗櫒闃舵琚彁鍓嶅疄渚嬪寲锛?
-     * 瀵艰嚧 @Value 瀛楁鏉ヤ笉鍙婃敞鍏ワ紙maxActive 绛変繚鎸侀粯璁ゅ€?0锛夈€?
-     */
     @Bean
-    public static MapperScannerConfigurer mapperScannerConfigurer() {
+    public MapperScannerConfigurer mapperScannerConfigurer() {
         MapperScannerConfigurer scanner = new MapperScannerConfigurer();
         scanner.setBasePackage("com.attendance.mapper");
         scanner.setSqlSessionFactoryBeanName("sqlSessionFactory");
         return scanner;
     }
 
-    // ==================== 浜嬪姟绠＄悊鍣?====================
+    // ==================== 事务管理器 ====================
 
     @Bean
     public DataSourceTransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 }
-
-
