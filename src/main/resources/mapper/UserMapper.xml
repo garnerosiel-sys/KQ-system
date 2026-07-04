@@ -53,4 +53,8 @@
         FROM user ORDER BY id ASC
     </select>
 
+    <select id="countUsers" resultType="int">
+        SELECT COUNT(*) FROM user
+    </select>
+
 </mapper>

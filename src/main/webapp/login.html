@@ -259,7 +259,13 @@
             console.log('🟢 Token:', cleanToken);
             console.log('🟢 Token长度:', cleanToken.length);
 
-            window.location.href = '/index.html';
+            // 根据角色跳转不同视图
+            const role = response.data.data.role;
+            if (role === 'workstation') {
+              window.location.href = '/index.jsp#workstation';
+            } else {
+              window.location.href = '/index.jsp';
+            }
           } else {
             errorMessage.value = response.data.message || '登录失败，请检查用户名和密码';
           }

@@ -47,4 +47,9 @@ public class WorkstationLogServiceImpl implements WorkstationLogService {
     public void deleteByWorkstationId(Integer workstationId) {
         workstationLogMapper.deleteByWorkstationId(workstationId);
     }
+
+    @Override
+    public List<WorkstationLog> getTodayActivities() {
+        return workstationLogMapper.selectToday();
+    }
 }

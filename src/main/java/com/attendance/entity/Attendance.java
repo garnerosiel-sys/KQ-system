@@ -3,8 +3,8 @@ package com.attendance.entity;
 import java.time.LocalDateTime;
 
 public class Attendance {
-    private Long id;
-    private Long userId;
+    private Integer id;
+    private Integer userId;
     private Integer type;          // 1=上班打卡, 2=下班打卡
     private Double latitude;       // 打卡纬度
     private Double longitude;      // 打卡经度
@@ -13,10 +13,10 @@ public class Attendance {
     private String remark;         // 备注（异常原因等）
     private LocalDateTime createTime;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+    public Integer getUserId() { return userId; }
+    public void setUserId(Integer userId) { this.userId = userId; }
     public Integer getType() { return type; }
     public void setType(Integer type) { this.type = type; }
     public Double getLatitude() { return latitude; }

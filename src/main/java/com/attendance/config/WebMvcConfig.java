@@ -53,9 +53,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/*.html")
                 .addResourceLocations("/")
                 .setCachePeriod(0);
-        registry.addResourceHandler("/*.jsp")
-                .addResourceLocations("/")
-                .setCachePeriod(0);
     }
 
     @Override

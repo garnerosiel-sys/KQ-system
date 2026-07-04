@@ -3,12 +3,25 @@ USE attendance_system;
 
 DROP TABLE IF EXISTS workstation_log;
 DROP TABLE IF EXISTS attendance_record;
+DROP TABLE IF EXISTS attendance;
 DROP TABLE IF EXISTS leave_request;
 DROP TABLE IF EXISTS makeup_request;
 DROP TABLE IF EXISTS overtime_request;
 DROP TABLE IF EXISTS attendance_rule;
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS company;
+
+CREATE TABLE company (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '公司ID',
+    name VARCHAR(100) NOT NULL COMMENT '公司名称',
+    center_latitude DECIMAL(10,6) NOT NULL COMMENT '公司中心点纬度',
+    center_longitude DECIMAL(10,6) NOT NULL COMMENT '公司中心点经度',
+    radius INT NOT NULL DEFAULT 100 COMMENT '有效打卡半径（米）',
+    address VARCHAR(255) COMMENT '公司地址',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+);
 
 CREATE TABLE department (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT '部门ID',
@@ -119,5 +132,24 @@ VALUES ('lisi', '123456', 'user', '李四', 2, '13900139002');
 INSERT INTO user (username, password, role, real_name, department_id, phone) 
 VALUES ('workstation1', '123456', 'workstation', '工作台1', 1, '13900139003');
 
-INSERT INTO attendance_rule (rule_name, work_start_time, work_end_time, center_longitude, center_latitude, allowed_radius) 
+INSERT INTO attendance_rule (rule_name, work_start_time, work_end_time, center_longitude, center_latitude, allowed_radius)
 VALUES ('标准考勤规则', '09:00:00', '18:00:00', 116.4074, 39.9042, 100);
+
+-- 打卡表（用于GPS打卡记录）
+CREATE TABLE attendance (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '打卡ID',
+    user_id BIGINT NOT NULL COMMENT '用户ID',
+    type INT NOT NULL COMMENT '打卡类型: 1=上班, 2=下班',
+    latitude DECIMAL(10,6) NOT NULL COMMENT '打卡纬度',
+    longitude DECIMAL(10,6) NOT NULL COMMENT '打卡经度',
+    address VARCHAR(255) COMMENT '打卡地址描述',
+    status INT NOT NULL DEFAULT 0 COMMENT '打卡状态: 0=异常, 1=正常',
+    remark VARCHAR(500) COMMENT '备注（异常原因等）',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    INDEX idx_user_id (user_id),
+    INDEX idx_create_time (create_time)
+);
+
+-- 默认公司数据（北京天安门附近）
+INSERT INTO company (name, center_latitude, center_longitude, radius, address)
+VALUES ('考勤系统演示公司', 39.9042, 116.4074, 500, '北京市东城区长安街');

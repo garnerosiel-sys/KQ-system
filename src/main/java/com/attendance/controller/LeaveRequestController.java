@@ -1,5 +1,6 @@
 package com.attendance.controller;
 
+import com.attendance.annotation.RequireRole;
 import com.attendance.common.Result;
 import com.attendance.entity.LeaveRequest;
 import com.attendance.service.LeaveRequestService;
@@ -17,6 +18,7 @@ public class LeaveRequestController {
     private LeaveRequestService leaveRequestService;
 
     @PostMapping("/submit")
+    @RequireRole({"admin", "user"})
     public Result<Void> submit(@RequestBody LeaveRequest request, HttpServletRequest httpRequest) {
         Integer userId = getCurrentUserId(httpRequest);
         request.setUserId(userId);
@@ -25,6 +27,7 @@ public class LeaveRequestController {
     }
 
     @PutMapping("/approve")
+    @RequireRole({"admin", "workstation"})
     public Result<Void> approve(@RequestBody LeaveRequest request, HttpServletRequest httpRequest) {
         Integer approverId = getCurrentUserId(httpRequest);
         leaveRequestService.approve(request.getId(), request.getStatus(), null, approverId, null);
@@ -32,6 +35,7 @@ public class LeaveRequestController {
     }
 
     @GetMapping("/my")
+    @RequireRole({"admin", "user"})
     public Result<List<LeaveRequest>> myRequests(HttpServletRequest httpRequest) {
         Integer userId = getCurrentUserId(httpRequest);
         return Result.success(leaveRequestService.getByUserId(userId));
@@ -41,16 +45,20 @@ public class LeaveRequestController {
         Object userIdObj = request.getAttribute("currentUserId");
         if (userIdObj instanceof Integer) {
             return (Integer) userIdObj;
+        } else if (userIdObj instanceof Long) {
+            return ((Long) userIdObj).intValue();
         }
-        return ((Long) userIdObj).intValue();
+        throw new IllegalArgumentException("无法获取用户ID，类型不匹配");
     }
 
     @GetMapping("/list")
+    @RequireRole({"admin", "workstation"})
     public Result<List<LeaveRequest>> list() {
         return Result.success(leaveRequestService.getAll());
     }
 
     @GetMapping("/pending")
+    @RequireRole({"admin", "workstation"})
     public Result<List<LeaveRequest>> pending() {
         return Result.success(leaveRequestService.getByStatus("待审批"));
     }

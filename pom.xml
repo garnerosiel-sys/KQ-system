@@ -214,6 +214,13 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- Jackson JSR310 时间模块（支持 LocalDateTime/LocalDate 序列化） -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
         <!-- ========== 日志相关 ========== -->
         <dependency>
             <groupId>org.slf4j</groupId>

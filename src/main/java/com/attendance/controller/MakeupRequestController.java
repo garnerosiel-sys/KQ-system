@@ -1,5 +1,6 @@
 package com.attendance.controller;
 
+import com.attendance.annotation.RequireRole;
 import com.attendance.common.Result;
 import com.attendance.entity.MakeupRequest;
 import com.attendance.service.MakeupRequestService;
@@ -17,6 +18,7 @@ public class MakeupRequestController {
     private MakeupRequestService makeupRequestService;
 
     @PostMapping("/submit")
+    @RequireRole({"admin", "user"})
     public Result<Void> submit(@RequestBody MakeupRequest request, HttpServletRequest httpRequest) {
         Integer userId = getCurrentUserId(httpRequest);
         request.setUserId(userId);
@@ -25,6 +27,7 @@ public class MakeupRequestController {
     }
 
     @PutMapping("/approve")
+    @RequireRole({"admin", "workstation"})
     public Result<Void> approve(@RequestBody MakeupRequest request, HttpServletRequest httpRequest) {
         Integer approverId = getCurrentUserId(httpRequest);
         makeupRequestService.approve(request.getId(), request.getStatus(), null, approverId, null);
@@ -32,6 +35,7 @@ public class MakeupRequestController {
     }
 
     @GetMapping("/my")
+    @RequireRole({"admin", "user"})
     public Result<List<MakeupRequest>> myRequests(HttpServletRequest httpRequest) {
         Integer userId = getCurrentUserId(httpRequest);
         return Result.success(makeupRequestService.getByUserId(userId));
@@ -41,16 +45,20 @@ public class MakeupRequestController {
         Object userIdObj = request.getAttribute("currentUserId");
         if (userIdObj instanceof Integer) {
             return (Integer) userIdObj;
+        } else if (userIdObj instanceof Long) {
+            return ((Long) userIdObj).intValue();
         }
-        return ((Long) userIdObj).intValue();
+        throw new IllegalArgumentException("无法获取用户ID，类型不匹配");
     }
 
     @GetMapping("/list")
+    @RequireRole({"admin", "workstation"})
     public Result<List<MakeupRequest>> list() {
         return Result.success(makeupRequestService.getAll());
     }
 
     @GetMapping("/pending")
+    @RequireRole({"admin", "workstation"})
     public Result<List<MakeupRequest>> pending() {
         return Result.success(makeupRequestService.getByStatus("待审批"));
     }

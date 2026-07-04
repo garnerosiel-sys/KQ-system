@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface AttendanceMapper {
     int insert(Attendance attendance);
-    List<Attendance> selectByUserId(@Param("userId") Long userId);
-    List<Attendance> selectByUserIdAndDate(@Param("userId") Long userId, @Param("date") String date);
+    List<Attendance> selectByUserId(@Param("userId") Integer userId);
+    List<Attendance> selectByUserIdAndDate(@Param("userId") Integer userId, @Param("date") String date);
     List<Attendance> selectAll(@Param("offset") int offset, @Param("limit") int limit);
     int countAll();
-    Attendance selectById(@Param("id") Long id);
+    Attendance selectById(@Param("id") Integer id);
     int updateById(Attendance attendance);
 }

@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("用户名或密码错误");
         }
 
-        String token = JwtUtil.generateToken(user.getId().longValue(), user.getUsername());
+        String token = JwtUtil.generateToken(user.getId(), user.getUsername());
 
         Map<String, Object> result = new HashMap<>();
         result.put("token", token);
@@ -112,5 +112,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Integer id) {
         userMapper.deleteById(id);
+    }
+
+    @Override
+    public String generateToken(User user) {
+        if (user == null || user.getId() == null || user.getUsername() == null) {
+            throw new BusinessException("用户信息不完整，无法生成Token");
+        }
+        return JwtUtil.generateToken(user.getId(), user.getUsername());
     }
 }

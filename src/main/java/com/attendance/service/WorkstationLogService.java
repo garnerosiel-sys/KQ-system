@@ -17,4 +17,6 @@ public interface WorkstationLogService {
     void delete(Integer id);
 
     void deleteByWorkstationId(Integer workstationId);
+
+    List<WorkstationLog> getTodayActivities();
 }

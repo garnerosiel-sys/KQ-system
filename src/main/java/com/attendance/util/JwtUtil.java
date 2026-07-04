@@ -47,7 +47,7 @@ public class JwtUtil {
      * @param username 用户名
      * @return 生成的 JWT Token 字符串
      */
-    public static String generateToken(Long userId, String username) {
+    public static String generateToken(Integer userId, String username) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USER_ID, userId);
         claims.put(CLAIM_KEY_USERNAME, username);
@@ -79,7 +79,7 @@ public class JwtUtil {
      * @param expirationMs 过期时间（毫秒）
      * @return 生成的 JWT Token 字符串
      */
-    public static String generateToken(Long userId, String username, long expirationMs) {
+    public static String generateToken(Integer userId, String username, long expirationMs) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_KEY_USER_ID, userId);
         claims.put(CLAIM_KEY_USERNAME, username);
@@ -179,14 +179,16 @@ public class JwtUtil {
      * @param token JWT Token 字符串
      * @return 用户ID
      */
-    public static Long getUserIdFromToken(String token) {
+    public static Integer getUserIdFromToken(String token) {
         Claims claims = parseToken(token);
         // Integer 是 JSON 反序列化数字的默认类型，需要兼容处理
         Object userIdObj = claims.get(CLAIM_KEY_USER_ID);
         if (userIdObj instanceof Integer) {
-            return ((Integer) userIdObj).longValue();
+            return (Integer) userIdObj;
+        } else if (userIdObj instanceof Long) {
+            return ((Long) userIdObj).intValue();
         }
-        return (Long) userIdObj;
+        throw new IllegalArgumentException("Token中的用户ID类型不正确");
     }
 
     /**

@@ -45,4 +45,12 @@
         DELETE FROM workstation_log WHERE workstation_id = #{workstationId}
     </delete>
 
+    <select id="selectToday" resultMap="BaseResultMap">
+        SELECT wl.id, wl.workstation_id, wl.action_detail, wl.create_time, u.real_name as workstation_name
+        FROM workstation_log wl
+        LEFT JOIN user u ON wl.workstation_id = u.id
+        WHERE DATE(wl.create_time) = CURDATE()
+        ORDER BY wl.create_time DESC
+    </select>
+
 </mapper>

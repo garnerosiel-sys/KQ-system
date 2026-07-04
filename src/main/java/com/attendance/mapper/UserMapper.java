@@ -17,4 +17,6 @@ public interface UserMapper {
     void deleteById(Integer id);
 
     java.util.List<User> selectAll();
+
+    int countUsers();
 }

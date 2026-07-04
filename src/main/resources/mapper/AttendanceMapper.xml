@@ -16,34 +16,34 @@
     </resultMap>
 
     <insert id="insert" parameterType="com.attendance.entity.Attendance" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_attendance (user_id, type, latitude, longitude, address, status, remark, create_time)
-        VALUES (#{userId}, #{type}, #{latitude}, #{longitude}, #{address}, #{status}, #{remark}, NOW())
+        INSERT INTO attendance (user_id, type, latitude, longitude, address, status, remark)
+        VALUES (#{userId}, #{type}, #{latitude}, #{longitude}, #{address}, #{status}, #{remark})
     </insert>
 
     <select id="selectByUserId" resultMap="attendanceMap">
-        SELECT * FROM t_attendance WHERE user_id = #{userId} ORDER BY create_time DESC
+        SELECT * FROM attendance WHERE user_id = #{userId} ORDER BY create_time DESC
     </select>
 
     <select id="selectByUserIdAndDate" resultMap="attendanceMap">
-        SELECT * FROM t_attendance
+        SELECT * FROM attendance
         WHERE user_id = #{userId} AND DATE(create_time) = #{date}
         ORDER BY create_time DESC
     </select>
 
     <select id="selectAll" resultMap="attendanceMap">
-        SELECT * FROM t_attendance ORDER BY create_time DESC LIMIT #{offset}, #{limit}
+        SELECT * FROM attendance ORDER BY create_time DESC LIMIT #{offset}, #{limit}
     </select>
 
     <select id="countAll" resultType="int">
-        SELECT COUNT(*) FROM t_attendance
+        SELECT COUNT(*) FROM attendance
     </select>
 
     <select id="selectById" resultMap="attendanceMap">
-        SELECT * FROM t_attendance WHERE id = #{id}
+        SELECT * FROM attendance WHERE id = #{id}
     </select>
 
     <update id="updateById" parameterType="com.attendance.entity.Attendance">
-        UPDATE t_attendance SET
+        UPDATE attendance SET
             status = #{status},
             remark = #{remark}
         WHERE id = #{id}

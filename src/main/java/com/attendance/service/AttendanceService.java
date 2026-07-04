@@ -1,125 +1,78 @@
 package com.attendance.service;
 
 import com.attendance.entity.Attendance;
-import com.attendance.entity.Company;
-import com.attendance.exception.BusinessException;
-import com.attendance.mapper.AttendanceMapper;
-import com.attendance.mapper.CompanyMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
-@Service
-public class AttendanceService {
-
-    @Autowired
-    private AttendanceMapper attendanceMapper;
-
-    @Autowired
-    private CompanyMapper companyMapper;
-
-    private static final double EARTH_RADIUS = 6371000.0; // 地球半径（米）
+/**
+ * 考勤服务接口
+ */
+public interface AttendanceService {
 
     /**
-     * 计算两点间的距离（Haversine公式）
-     * @return 距离（米）
+     * 上班打卡
      */
-    public double calcDistance(double lat1, double lng1, double lat2, double lng2) {
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLng = Math.toRadians(lng2 - lng1);
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return EARTH_RADIUS * c;
-    }
+    Attendance checkIn(Integer userId, Double latitude, Double longitude, String address);
 
     /**
-     * GPS 打卡核心逻辑
-     * @param userId    用户ID
-     * @param type      打卡类型（1=上班, 2=下班）
-     * @param latitude  用户纬度
-     * @param longitude 用户经度
-     * @param address   地址描述
+     * 下班打卡
      */
-    public Attendance punch(Long userId, Integer type, Double latitude,
-                            Double longitude, String address) {
-        Company company = companyMapper.selectDefault();
-        if (company == null) {
-            throw new BusinessException("公司信息未配置，请联系管理员");
-        }
+    Attendance checkOut(Integer userId, Double latitude, Double longitude, String address);
 
-        double distance = calcDistance(latitude, longitude,
-                company.getCenterLatitude(), company.getCenterLongitude());
+    /**
+     * GPS 打卡（兼容旧版）
+     */
+    Attendance punch(Integer userId, Integer type, Double latitude, Double longitude, String address);
 
-        Attendance record = new Attendance();
-        record.setUserId(userId);
-        record.setType(type);
-        record.setLatitude(latitude);
-        record.setLongitude(longitude);
-        record.setAddress(address);
+    /**
+     * 代打卡（工作台/管理员为其他员工打卡）
+     */
+    Attendance punchFor(Integer operatorId, String operatorName, Integer targetUserId, Integer type,
+                        Double latitude, Double longitude, String address);
 
-        int radius = company.getRadius() != null ? company.getRadius() : 100;
+    /**
+     * 获取我的打卡记录
+     */
+    List<Attendance> getMyRecords(Integer userId);
 
-        if (distance <= radius) {
-            record.setStatus(1);
-            record.setRemark("正常打卡，距离公司约 " + String.format("%.0f", distance) + " 米");
-        } else {
-            record.setStatus(0);
-            record.setRemark("异常打卡，距离公司约 " + String.format("%.0f", distance) + " 米（超出允许范围 " + radius + " 米）");
-        }
+    /**
+     * 获取今日打卡记录列表
+     */
+    List<Attendance> getTodayRecords(Integer userId);
 
-        attendanceMapper.insert(record);
-        return record;
-    }
+    /**
+     * 分页获取所有打卡记录
+     */
+    List<Attendance> getAllRecords(int page, int pageSize);
 
-    public List<Attendance> getMyRecords(Long userId) {
-        return attendanceMapper.selectByUserId(userId);
-    }
+    /**
+     * 统计总记录数
+     */
+    int countAll();
 
-    public List<Attendance> getTodayRecords(Long userId) {
-        return attendanceMapper.selectByUserIdAndDate(userId, LocalDate.now().toString());
-    }
+    /**
+     * 获取单条考勤记录
+     */
+    Attendance getById(Integer id);
 
-    public List<Attendance> getAllRecords(int page, int pageSize) {
-        int offset = (page - 1) * pageSize;
-        return attendanceMapper.selectAll(offset, pageSize);
-    }
+    /**
+     * 补卡（管理员操作）
+     */
+    void makeup(Integer recordId, Integer userId, String remark);
 
-    public int countAll() {
-        return attendanceMapper.countAll();
-    }
+    /**
+     * 更新打卡状态
+     */
+    void updateStatus(Integer id, Integer status, String remark);
 
-    /** 获取单条考勤记录 */
-    public Attendance getById(Long id) {
-        return attendanceMapper.selectById(id);
-    }
+    /**
+     * 获取用户今日打卡状态
+     */
+    Map<String, Object> getPunchStatus(Integer userId);
 
-    /** 补卡（仅管理员可操作） */
-    public void makeup(Long recordId, Long userId, String remark) {
-        Attendance record = attendanceMapper.selectById(recordId);
-        if (record == null) {
-            throw new BusinessException("记录不存在");
-        }
-        record.setStatus(1);
-        record.setRemark(remark != null ? remark : "管理员补卡");
-        attendanceMapper.updateById(record);
-    }
-
-    /** 更新打卡状态 */
-    public void updateStatus(Long id, Integer status, String remark) {
-        Attendance record = attendanceMapper.selectById(id);
-        if (record == null) {
-            throw new BusinessException("记录不存在");
-        }
-        record.setStatus(status);
-        if (remark != null) {
-            record.setRemark(remark);
-        }
-        attendanceMapper.updateById(record);
-    }
-
+    /**
+     * 获取用户今日打卡记录详情
+     */
+    Map<String, Object> getTodayRecord(Integer userId);
 }

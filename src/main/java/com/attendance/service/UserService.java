@@ -21,4 +21,12 @@ public interface UserService {
     void updateUser(User user);
 
     void deleteUser(Integer id);
+
+    /**
+     * 根据用户信息生成JWT Token
+     *
+     * @param user 用户对象
+     * @return JWT Token字符串
+     */
+    String generateToken(User user);
 }

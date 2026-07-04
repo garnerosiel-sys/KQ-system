@@ -28,13 +28,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    /**
-     * 用户登录
-     *
-     * @param username 用户名
-     * @param password 密码
-     * @return 登录结果，包含Token和用户信息
-     */
     @PostMapping("/login")
     public Result login(@RequestBody Map<String, String> params) {
         String username = params.get("username");
@@ -66,7 +59,7 @@ public class UserController {
     }
 
     @GetMapping("/user/list")
-    @RequireRole("admin")
+    @RequireRole({"admin", "workstation"})
     public Result userList() {
         return Result.success(userService.getAllUsers());
     }

@@ -67,7 +67,7 @@ public class RoleAspect {
             throw new RuntimeException("未登录，请先登录");
         }
 
-        Long userId = userIdObj instanceof Long ? (Long) userIdObj : ((Integer) userIdObj).longValue();
+        Integer userId = userIdObj instanceof Integer ? (Integer) userIdObj : ((Number) userIdObj).intValue();
 
         // 获取方法上的注解
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -80,7 +80,7 @@ public class RoleAspect {
         }
 
         // 查询用户信息
-        User user = userService.getUserById(userId.intValue());
+        User user = userService.getUserById(userId);
         if (user == null) {
             log.warn("用户不存在，userId: {}", userId);
             throw new RuntimeException("用户不存在");

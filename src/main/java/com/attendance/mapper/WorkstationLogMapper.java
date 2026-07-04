@@ -20,4 +20,6 @@ public interface WorkstationLogMapper {
     int deleteById(@Param("id") Integer id);
 
     int deleteByWorkstationId(@Param("workstationId") Integer workstationId);
+
+    List<WorkstationLog> selectToday();
 }
