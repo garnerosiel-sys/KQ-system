@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.attendance.mapper.DepartmentMapper">
+
+    <resultMap id="BaseResultMap" type="com.attendance.entity.Department">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="Integer" resultMap="BaseResultMap">
+        SELECT id, name, create_time FROM department WHERE id = #{id}
+    </select>
+
+    <select id="selectByName" parameterType="String" resultMap="BaseResultMap">
+        SELECT id, name, create_time FROM department WHERE name = #{name} LIMIT 1
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT id, name, create_time FROM department ORDER BY id ASC
+    </select>
+
+    <insert id="insert" parameterType="com.attendance.entity.Department">
+        INSERT INTO department (name, create_time)
+        VALUES (#{name}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.attendance.entity.Department">
+        UPDATE department
+        SET name = #{name}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="Integer">
+        DELETE FROM department WHERE id = #{id}
+    </delete>
+
+</mapper>

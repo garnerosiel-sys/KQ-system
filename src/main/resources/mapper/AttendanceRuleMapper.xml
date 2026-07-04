@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.attendance.mapper.AttendanceRuleMapper">
+
+    <resultMap id="BaseResultMap" type="com.attendance.entity.AttendanceRule">
+        <id column="id" property="id"/>
+        <result column="rule_name" property="ruleName"/>
+        <result column="work_start_time" property="workStartTime"/>
+        <result column="work_end_time" property="workEndTime"/>
+        <result column="center_longitude" property="centerLongitude"/>
+        <result column="center_latitude" property="centerLatitude"/>
+        <result column="allowed_radius" property="allowedRadius"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT id, rule_name, work_start_time, work_end_time,
+               center_longitude, center_latitude, allowed_radius, create_time
+        FROM attendance_rule
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectLatest" resultMap="BaseResultMap">
+        SELECT id, rule_name, work_start_time, work_end_time,
+               center_longitude, center_latitude, allowed_radius, create_time
+        FROM attendance_rule
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT id, rule_name, work_start_time, work_end_time,
+               center_longitude, center_latitude, allowed_radius, create_time
+        FROM attendance_rule ORDER BY id ASC
+    </select>
+
+    <insert id="insert" parameterType="com.attendance.entity.AttendanceRule">
+        INSERT INTO attendance_rule 
+        (rule_name, work_start_time, work_end_time, center_longitude, center_latitude, allowed_radius, create_time)
+        VALUES 
+        (#{ruleName}, #{workStartTime}, #{workEndTime}, #{centerLongitude}, #{centerLatitude}, #{allowedRadius}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.attendance.entity.AttendanceRule">
+        UPDATE attendance_rule
+        SET rule_name = #{ruleName},
+            work_start_time = #{workStartTime},
+            work_end_time = #{workEndTime},
+            center_longitude = #{centerLongitude},
+            center_latitude = #{centerLatitude},
+            allowed_radius = #{allowedRadius}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="Integer">
+        DELETE FROM attendance_rule WHERE id = #{id}
+    </delete>
+
+</mapper>

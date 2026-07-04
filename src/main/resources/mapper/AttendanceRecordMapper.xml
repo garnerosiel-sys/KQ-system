@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.attendance.mapper.AttendanceRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.attendance.entity.AttendanceRecord">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="check_in_time" property="checkInTime"/>
+        <result column="check_out_time" property="checkOutTime"/>
+        <result column="check_in_longitude" property="checkInLongitude"/>
+        <result column="check_in_latitude" property="checkInLatitude"/>
+        <result column="check_out_longitude" property="checkOutLongitude"/>
+        <result column="check_out_latitude" property="checkOutLatitude"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, user_id, record_date, check_in_time, check_out_time,
+        check_in_longitude, check_in_latitude, check_out_longitude, check_out_latitude,
+        status, create_time
+    </sql>
+
+    <insert id="insert" parameterType="com.attendance.entity.AttendanceRecord">
+        INSERT INTO attendance_record (
+            user_id, record_date, check_in_time, check_out_time,
+            check_in_longitude, check_in_latitude, check_out_longitude, check_out_latitude,
+            status, create_time
+        ) VALUES (
+            #{userId}, #{recordDate}, #{checkInTime}, #{checkOutTime},
+            #{checkInLongitude}, #{checkInLatitude}, #{checkOutLongitude}, #{checkOutLatitude},
+            #{status}, #{createTime}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.attendance.entity.AttendanceRecord">
+        UPDATE attendance_record SET
+            user_id = #{userId},
+            record_date = #{recordDate},
+            check_in_time = #{checkInTime},
+            check_out_time = #{checkOutTime},
+            check_in_longitude = #{checkInLongitude},
+            check_in_latitude = #{checkInLatitude},
+            check_out_longitude = #{checkOutLongitude},
+            check_out_latitude = #{checkOutLatitude},
+            status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumnList"/>
+        FROM attendance_record
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserIdAndDate" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumnList"/>
+        FROM attendance_record
+        WHERE user_id = #{userId} AND record_date = #{recordDate}
+        LIMIT 1
+    </select>
+
+    <select id="selectByUserIdAndDateRange" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumnList"/>
+        FROM attendance_record
+        WHERE user_id = #{userId}
+          AND record_date &gt;= #{startDate}
+          AND record_date &lt;= #{endDate}
+        ORDER BY record_date DESC
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumnList"/>
+        FROM attendance_record
+        ORDER BY record_date DESC, create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM attendance_record
+    </select>
+
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumnList"/>
+        FROM attendance_record
+        WHERE 1 = 1
+        <if test="userId != null">AND user_id = #{userId}</if>
+        <if test="recordDate != null and recordDate != ''">AND record_date = #{recordDate}</if>
+        <if test="status != null and status != ''">AND status = #{status}</if>
+        ORDER BY record_date DESC, create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectCountByCondition" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM attendance_record
+        WHERE 1 = 1
+        <if test="userId != null">AND user_id = #{userId}</if>
+        <if test="recordDate != null and recordDate != ''">AND record_date = #{recordDate}</if>
+        <if test="status != null and status != ''">AND status = #{status}</if>
+    </select>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        DELETE FROM attendance_record WHERE id = #{id}
+    </delete>
+
+</mapper>

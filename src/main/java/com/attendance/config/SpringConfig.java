@@ -30,7 +30,7 @@ import javax.sql.DataSource;
                         value = org.springframework.web.bind.annotation.RestControllerAdvice.class)
         }
 )
-@PropertySource("classpath:application.properties")
+@PropertySource(value = "classpath:application.properties", encoding = "UTF-8")
 @EnableTransactionManagement
 public class SpringConfig {
 

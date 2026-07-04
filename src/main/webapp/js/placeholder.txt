@@ -1,0 +1,1 @@
+This directory needs vue.global.prod.js and axios.min.js
