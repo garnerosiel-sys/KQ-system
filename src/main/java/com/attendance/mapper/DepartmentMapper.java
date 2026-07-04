@@ -1,15 +1,23 @@
-﻿package com.attendance.mapper;
+package com.attendance.mapper;
 
 import com.attendance.entity.Department;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+@Mapper
 public interface DepartmentMapper {
-    int insert(Department department);
-    int updateById(Department department);
-    int deleteById(@Param("id") Long id);
-    Department selectById(@Param("id") Long id);
+
+    Department selectById(@Param("id") Integer id);
+
+    Department selectByName(@Param("name") String name);
+
     List<Department> selectAll();
-    List<Department> selectByParentId(@Param("parentId") Long parentId);
+
+    int insert(Department department);
+
+    int update(Department department);
+
+    int deleteById(@Param("id") Integer id);
 }

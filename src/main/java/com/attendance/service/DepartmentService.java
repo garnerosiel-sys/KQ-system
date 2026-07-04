@@ -1,40 +1,20 @@
-﻿package com.attendance.service;
+package com.attendance.service;
 
 import com.attendance.entity.Department;
-import com.attendance.mapper.DepartmentMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class DepartmentService {
+public interface DepartmentService {
 
-    @Autowired
-    private DepartmentMapper departmentMapper;
+    Department getById(Integer id);
 
-    public Department create(Department department) {
-        departmentMapper.insert(department);
-        return department;
-    }
+    Department getByName(String name);
 
-    public void update(Department department) {
-        departmentMapper.updateById(department);
-    }
+    List<Department> getAll();
 
-    public void delete(Long id) {
-        departmentMapper.deleteById(id);
-    }
+    void add(Department department);
 
-    public Department getById(Long id) {
-        return departmentMapper.selectById(id);
-    }
+    void update(Department department);
 
-    public List<Department> getAll() {
-        return departmentMapper.selectAll();
-    }
-
-    public List<Department> getChildren(Long parentId) {
-        return departmentMapper.selectByParentId(parentId);
-    }
+    void delete(Integer id);
 }

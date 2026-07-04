@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>考勤管理系统 - 登录</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.39/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      width: 400px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .login-title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .login-title h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .login-title p {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: #667eea;
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 50px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    }
+
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .register-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="login-container">
+    <div class="login-title">
+      <h1>考勤管理系统</h1>
+      <p>欢迎登录，开始您的打卡之旅</p>
+    </div>
+
+    <div class="form-group">
+      <label for="username">用户名</label>
+      <input
+              id="username"
+              type="text"
+              v-model="username"
+              placeholder="请输入用户名"
+              @keyup.enter="handleLogin"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="password">密码</label>
+      <input
+              id="password"
+              type="password"
+              v-model="password"
+              placeholder="请输入密码"
+              @keyup.enter="handleLogin"
+      />
+    </div>
+
+    <button
+            class="login-btn"
+            :disabled="!username || !password || isLoading"
+            @click="handleLogin"
+    >
+      <span v-if="isLoading">登录中...</span>
+      <span v-else>登 录</span>
+    </button>
+
+    <div class="error-message" v-if="errorMessage">{{ errorMessage }}</div>
+
+    <div class="register-link">
+      还没有账号？<a href="register.html">立即注册</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // 1. 配置 axios 请求拦截器（自动添加 Token）
+  // ============================================================
+  axios.interceptors.request.use(
+          function(config) {
+            const token = localStorage.getItem('token');
+            console.log('🔵 拦截器 - 获取到的Token:', token);
+
+            if (token) {
+              const cleanToken = token.replace(/[\r\n]/g, '').trim();
+              config.headers['Authorization'] = 'Bearer ' + cleanToken;
+              console.log('🟢 拦截器 - 已设置 Authorization 头');
+            } else {
+              console.warn('🟡 拦截器 - 没有 Token');
+            }
+            return config;
+          },
+          function(error) {
+            return Promise.reject(error);
+          }
+  );
+
+  // ============================================================
+  // 2. 配置 axios 响应拦截器（处理 401）
+  // ============================================================
+  axios.interceptors.response.use(
+          function(response) {
+            if (response.data && response.data.code === 401) {
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              window.location.href = '/login.html';
+            }
+            return response;
+          },
+          function(error) {
+            if (error.response && error.response.status === 401) {
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              window.location.href = '/login.html';
+            }
+            return Promise.reject(error);
+          }
+  );
+
+  // ============================================================
+  // 3. Vue 应用
+  // ============================================================
+  const { createApp, ref } = Vue;
+
+  createApp({
+    setup() {
+      const username = ref('');
+      const password = ref('');
+      const isLoading = ref(false);
+      const errorMessage = ref('');
+
+      const handleLogin = async () => {
+        if (!username.value || !password.value) {
+          errorMessage.value = '请输入用户名和密码';
+          return;
+        }
+
+        isLoading.value = true;
+        errorMessage.value = '';
+
+        try {
+            const response = await axios.post('http://localhost:8080/api/login', {
+              username: username.value,
+              password: password.value
+            }, {
+              headers: { 'Content-Type': 'application/json' }
+            });
+
+          console.log('🔵 登录响应:', response.data);
+
+          if (response.data.code === 200) {
+            const rawToken = response.data.data.token;
+            const cleanToken = rawToken.replace(/[\r\n]/g, '').trim();
+
+            localStorage.setItem('token', cleanToken);
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+
+            console.log('🟢 登录成功！');
+            console.log('🟢 Token:', cleanToken);
+            console.log('🟢 Token长度:', cleanToken.length);
+
+            window.location.href = '/index.html';
+          } else {
+            errorMessage.value = response.data.message || '登录失败，请检查用户名和密码';
+          }
+        } catch (error) {
+          console.error('🔴 登录请求失败:', error);
+          if (error.response && error.response.data) {
+            errorMessage.value = error.response.data.message || '登录失败，请稍后重试';
+          } else {
+            errorMessage.value = '网络错误，请检查服务器是否运行';
+          }
+        } finally {
+          isLoading.value = false;
+        }
+      };
+
+      return {
+        username,
+        password,
+        isLoading,
+        errorMessage,
+        handleLogin
+      };
+    }
+  }).mount('#app');
+</script>
+</body>
+</html>

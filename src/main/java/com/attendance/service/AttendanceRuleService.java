@@ -1,41 +1,20 @@
-﻿package com.attendance.service;
+package com.attendance.service;
 
 import com.attendance.entity.AttendanceRule;
-import com.attendance.exception.BusinessException;
-import com.attendance.mapper.AttendanceRuleMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class AttendanceRuleService {
+public interface AttendanceRuleService {
 
-    @Autowired
-    private AttendanceRuleMapper attendanceRuleMapper;
+    AttendanceRule getById(Integer id);
 
-    public AttendanceRule create(AttendanceRule rule) {
-        attendanceRuleMapper.insert(rule);
-        return rule;
-    }
+    AttendanceRule getLatest();
 
-    public void update(AttendanceRule rule) {
-        attendanceRuleMapper.updateById(rule);
-    }
+    List<AttendanceRule> getAll();
 
-    public AttendanceRule getActive() {
-        return attendanceRuleMapper.selectActive();
-    }
+    void add(AttendanceRule rule);
 
-    public AttendanceRule getById(Long id) {
-        return attendanceRuleMapper.selectById(id);
-    }
+    void update(AttendanceRule rule);
 
-    public List<AttendanceRule> getAll(int page, int pageSize) {
-        return attendanceRuleMapper.selectAll((page - 1) * pageSize, pageSize);
-    }
-
-    public int countAll() {
-        return attendanceRuleMapper.countAll();
-    }
+    void delete(Integer id);
 }

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -39,11 +40,38 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private LoginInterceptor loginInterceptor;
 
-    /** 注册 JWT 登录拦截器 */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/js/**")
+                .addResourceLocations("/js/")
+                .setCachePeriod(0);
+        registry.addResourceHandler("/css/**")
+                .addResourceLocations("/css/")
+                .setCachePeriod(0);
+        registry.addResourceHandler("/api/**")
+                .addResourceLocations("/api/");
+        registry.addResourceHandler("/*.html")
+                .addResourceLocations("/")
+                .setCachePeriod(0);
+        registry.addResourceHandler("/*.jsp")
+                .addResourceLocations("/")
+                .setCachePeriod(0);
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/static/**", "/error");
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/api/login", "/api/register");
+    }
+
+    @Override
+    public void addCorsMappings(org.springframework.web.servlet.config.annotation.CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOriginPatterns("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 }

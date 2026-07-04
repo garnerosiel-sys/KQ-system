@@ -85,16 +85,19 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         // ---- 3. 获取 Token ----
+        String authHeader = request.getHeader(HEADER_AUTHORIZATION);
+        log.info("请求 [{} {}], Authorization头: [{}]", request.getMethod(), requestURI, authHeader);
+        
         String token = extractToken(request);
         if (token == null || token.isEmpty()) {
-            log.warn("请求缺少 Token: {} {}", request.getMethod(), requestURI);
+            log.warn("请求缺少 Token: {} {} , Authorization头: [{}]", request.getMethod(), requestURI, authHeader);
             writeUnauthorizedResponse(response, "Token 缺失，请先登录");
             return false;
         }
 
         // ---- 4. 验证 Token ----
         if (!JwtUtil.validateToken(token)) {
-            log.warn("Token 验证失败: {} {}", request.getMethod(), requestURI);
+            log.warn("Token 验证失败: {} {}, token: [{}]", request.getMethod(), requestURI, token);
             writeUnauthorizedResponse(response, "Token 无效或已过期，请重新登录");
             return false;
         }

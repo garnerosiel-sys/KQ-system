@@ -1,56 +1,53 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.attendance.mapper.MakeupRequestMapper">
 
-    <resultMap id="makeupRequestMap" type="com.attendance.entity.MakeupRequest">
-        <id property="id" column="id"/>
-        <result property="userId" column="user_id"/>
-        <result property="sourceDate" column="source_date"/>
-        <result property="targetDate" column="target_date"/>
-        <result property="reason" column="reason"/>
-        <result property="type" column="type"/>
-        <result property="status" column="status"/>
-        <result property="rejectReason" column="reject_reason"/>
-        <result property="approverId" column="approver_id"/>
-        <result property="approveTime" column="approve_time"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateTime" column="update_time"/>
+    <resultMap id="BaseResultMap" type="com.attendance.entity.MakeupRequest">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="record_date" property="recordDate"/>
+        <result column="makeup_time" property="makeupTime"/>
+        <result column="makeup_type" property="makeupType"/>
+        <result column="reason" property="reason"/>
+        <result column="status" property="status"/>
+        <result column="approver_id" property="approverId"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <insert id="insert" parameterType="com.attendance.entity.MakeupRequest" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_makeup_request (user_id, source_date, target_date, reason, type, status, create_time, update_time)
-        VALUES (#{userId}, #{sourceDate}, #{targetDate}, #{reason}, #{type}, 0, NOW(), NOW())
+    <insert id="insert" parameterType="com.attendance.entity.MakeupRequest">
+        INSERT INTO makeup_request 
+        (user_id, record_date, makeup_time, makeup_type, reason, status, create_time)
+        VALUES 
+        (#{userId}, #{recordDate}, #{makeupTime}, #{makeupType}, #{reason}, #{status}, #{createTime})
     </insert>
 
-    <update id="updateById" parameterType="com.attendance.entity.MakeupRequest">
-        UPDATE t_makeup_request SET
-            status = #{status},
-            reject_reason = #{rejectReason},
-            approver_id = #{approverId},
-            approve_time = NOW(),
-            update_time = NOW()
+    <update id="update" parameterType="com.attendance.entity.MakeupRequest">
+        UPDATE makeup_request
+        <set>
+            <if test="recordDate != null">record_date = #{recordDate},</if>
+            <if test="makeupTime != null">makeup_time = #{makeupTime},</if>
+            <if test="makeupType != null">makeup_type = #{makeupType},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="approverId != null">approver_id = #{approverId},</if>
+        </set>
         WHERE id = #{id}
     </update>
 
-    <select id="selectById" resultMap="makeupRequestMap">
-        SELECT * FROM t_makeup_request WHERE id = #{id}
+    <select id="selectById" parameterType="Integer" resultMap="BaseResultMap">
+        SELECT * FROM makeup_request WHERE id = #{id}
     </select>
 
-    <select id="selectByUserId" resultMap="makeupRequestMap">
-        SELECT * FROM t_makeup_request WHERE user_id = #{userId} ORDER BY create_time DESC
+    <select id="selectByUserId" parameterType="Integer" resultMap="BaseResultMap">
+        SELECT * FROM makeup_request WHERE user_id = #{userId} ORDER BY create_time DESC
     </select>
 
-    <select id="selectPending" resultMap="makeupRequestMap">
-        SELECT * FROM t_makeup_request WHERE status = 0 ORDER BY create_time ASC
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM makeup_request ORDER BY create_time DESC
     </select>
 
-    <select id="selectAll" resultMap="makeupRequestMap">
-        SELECT * FROM t_makeup_request ORDER BY create_time DESC LIMIT #{offset}, #{limit}
-    </select>
-
-    <select id="countAll" resultType="int">
-        SELECT COUNT(*) FROM t_makeup_request
+    <select id="selectByStatus" parameterType="String" resultMap="BaseResultMap">
+        SELECT * FROM makeup_request WHERE status = #{status} ORDER BY create_time DESC
     </select>
 
 </mapper>

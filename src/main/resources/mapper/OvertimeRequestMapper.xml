@@ -1,57 +1,51 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.attendance.mapper.OvertimeRequestMapper">
 
-    <resultMap id="overtimeRequestMap" type="com.attendance.entity.OvertimeRequest">
-        <id property="id" column="id"/>
-        <result property="userId" column="user_id"/>
-        <result property="overtimeDate" column="overtime_date"/>
-        <result property="startTime" column="start_time"/>
-        <result property="endTime" column="end_time"/>
-        <result property="hours" column="hours"/>
-        <result property="reason" column="reason"/>
-        <result property="status" column="status"/>
-        <result property="rejectReason" column="reject_reason"/>
-        <result property="approverId" column="approver_id"/>
-        <result property="approveTime" column="approve_time"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateTime" column="update_time"/>
+    <resultMap id="BaseResultMap" type="com.attendance.entity.OvertimeRequest">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="reason" property="reason"/>
+        <result column="status" property="status"/>
+        <result column="approver_id" property="approverId"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
-    <insert id="insert" parameterType="com.attendance.entity.OvertimeRequest" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO t_overtime_request (user_id, overtime_date, start_time, end_time, hours, reason, status, create_time, update_time)
-        VALUES (#{userId}, #{overtimeDate}, #{startTime}, #{endTime}, #{hours}, #{reason}, 0, NOW(), NOW())
+    <insert id="insert" parameterType="com.attendance.entity.OvertimeRequest">
+        INSERT INTO overtime_request 
+        (user_id, start_time, end_time, reason, status, create_time)
+        VALUES 
+        (#{userId}, #{startTime}, #{endTime}, #{reason}, #{status}, #{createTime})
     </insert>
 
-    <update id="updateById" parameterType="com.attendance.entity.OvertimeRequest">
-        UPDATE t_overtime_request SET
-            status = #{status},
-            reject_reason = #{rejectReason},
-            approver_id = #{approverId},
-            approve_time = NOW(),
-            update_time = NOW()
+    <update id="update" parameterType="com.attendance.entity.OvertimeRequest">
+        UPDATE overtime_request
+        <set>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="approverId != null">approver_id = #{approverId},</if>
+        </set>
         WHERE id = #{id}
     </update>
 
-    <select id="selectById" resultMap="overtimeRequestMap">
-        SELECT * FROM t_overtime_request WHERE id = #{id}
+    <select id="selectById" parameterType="Integer" resultMap="BaseResultMap">
+        SELECT * FROM overtime_request WHERE id = #{id}
     </select>
 
-    <select id="selectByUserId" resultMap="overtimeRequestMap">
-        SELECT * FROM t_overtime_request WHERE user_id = #{userId} ORDER BY create_time DESC
+    <select id="selectByUserId" parameterType="Integer" resultMap="BaseResultMap">
+        SELECT * FROM overtime_request WHERE user_id = #{userId} ORDER BY create_time DESC
     </select>
 
-    <select id="selectPending" resultMap="overtimeRequestMap">
-        SELECT * FROM t_overtime_request WHERE status = 0 ORDER BY create_time ASC
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM overtime_request ORDER BY create_time DESC
     </select>
 
-    <select id="selectAll" resultMap="overtimeRequestMap">
-        SELECT * FROM t_overtime_request ORDER BY create_time DESC LIMIT #{offset}, #{limit}
-    </select>
-
-    <select id="countAll" resultType="int">
-        SELECT COUNT(*) FROM t_overtime_request
+    <select id="selectByStatus" parameterType="String" resultMap="BaseResultMap">
+        SELECT * FROM overtime_request WHERE status = #{status} ORDER BY create_time DESC
     </select>
 
 </mapper>

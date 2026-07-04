@@ -1,16 +1,23 @@
-﻿package com.attendance.mapper;
+package com.attendance.mapper;
 
 import com.attendance.entity.LeaveRequest;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
+@Mapper
 public interface LeaveRequestMapper {
+
     int insert(LeaveRequest leaveRequest);
-    int updateById(LeaveRequest leaveRequest);
-    LeaveRequest selectById(@Param("id") Long id);
-    List<LeaveRequest> selectByUserId(@Param("userId") Long userId);
-    List<LeaveRequest> selectPending(@Param("approverId") Long approverId);
-    List<LeaveRequest> selectAll(@Param("offset") int offset, @Param("limit") int limit);
-    int countAll();
+
+    int update(LeaveRequest leaveRequest);
+
+    LeaveRequest selectById(@Param("id") Integer id);
+
+    List<LeaveRequest> selectByUserId(@Param("userId") Integer userId);
+
+    List<LeaveRequest> selectAll();
+
+    List<LeaveRequest> selectByStatus(@Param("status") String status);
 }

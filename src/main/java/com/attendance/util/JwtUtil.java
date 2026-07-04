@@ -52,13 +52,23 @@ public class JwtUtil {
         claims.put(CLAIM_KEY_USER_ID, userId);
         claims.put(CLAIM_KEY_USERNAME, username);
 
-        return Jwts.builder()
+        // ✅ 先生成，存到变量
+        String token = Jwts.builder()
                 .setClaims(claims)                              // 设置自定义声明
                 .setSubject(username)                           // 设置主题（用户名）
                 .setIssuedAt(new Date())                        // 设置签发时间
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION)) // 设置过期时间
                 .signWith(SignatureAlgorithm.HS256, SECRET)     // 使用 HS256 算法签名
                 .compact();
+
+        // ✅ 打印日志
+        System.out.println("========== 生成的Token (2参数) ===========");
+        System.out.println("Token: " + token);
+        System.out.println("Token长度: " + token.length());
+        System.out.println("Token分段数: " + token.split("\\.").length + "段");
+        System.out.println("==========================================");
+
+        return token;
     }
 
     /**
@@ -74,13 +84,23 @@ public class JwtUtil {
         claims.put(CLAIM_KEY_USER_ID, userId);
         claims.put(CLAIM_KEY_USERNAME, username);
 
-        return Jwts.builder()
+        // ✅ 先生成，存到变量
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
+
+        // ✅ 打印日志
+        System.out.println("========== 生成的Token (3参数) ===========");
+        System.out.println("Token: " + token);
+        System.out.println("Token长度: " + token.length());
+        System.out.println("Token分段数: " + token.split("\\.").length + "段");
+        System.out.println("==========================================");
+
+        return token;
     }
 
     // ==================== 解析 Token ====================
@@ -121,6 +141,13 @@ public class JwtUtil {
             parseToken(token);
             return true;
         } catch (Exception e) {
+            // ✅ 打印具体异常，方便排查
+            System.out.println("========== Token验证失败 ==========");
+            System.out.println("Token: " + token);
+            System.out.println("异常类型: " + e.getClass().getSimpleName());
+            System.out.println("异常信息: " + e.getMessage());
+            e.printStackTrace();  // 打印完整堆栈
+            System.out.println("====================================");
             return false;
         }
     }

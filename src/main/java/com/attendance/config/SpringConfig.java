@@ -1,4 +1,4 @@
-﻿package com.attendance.config;
+package com.attendance.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -8,16 +8,14 @@ import org.springframework.context.annotation.*;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-
 
 import javax.sql.DataSource;
 
 /**
- * Spring 鏍瑰鍣ㄩ厤缃紙鏇夸唬 applicationContext.xml锛?
+ * Spring 根容器配置（替代 applicationContext.xml）
  * <p>
- * 绠＄悊 Service銆丮apper銆佹暟鎹簮銆佷簨鍔＄瓑涓棿灞傜粍浠躲€?
- * MVC 灞傜粍浠讹紙Controller / 鎷︽埅鍣?/ 寮傚父澶勭悊鍣級浜ょ粰 {@link WebMvcConfig} 绠＄悊銆?
+ * 管理 Service、Mapper、数据源、事务等中间层组件。
+ * MVC 层组件（Controller / 拦截器 / 异常处理器）交给 {@link WebMvcConfig} 管理。
  * </p>
  *
  * @author KQ-system
@@ -32,7 +30,7 @@ import javax.sql.DataSource;
                         value = org.springframework.web.bind.annotation.RestControllerAdvice.class)
         }
 )
-@PropertySource("classpath:application.properties")
+@PropertySource(value = "classpath:application.properties", encoding = "UTF-8")
 @EnableTransactionManagement
 public class SpringConfig {
 
@@ -60,7 +58,7 @@ public class SpringConfig {
     @Value("${jdbc.maxWait}")
     private long maxWait;
 
-    // ==================== Druid 鏁版嵁婧?====================
+    // ==================== Druid 数据源 ====================
 
     @Bean
     public DataSource dataSource() {
@@ -90,7 +88,7 @@ public class SpringConfig {
         SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setTypeAliasesPackage(typeAliasesPackage);
-        // 灏?classpath:mapper/*.xml 瑙ｆ瀽涓?Resource[] 骞舵敞鍏?
+        // 将 classpath:mapper/*.xml 解析为 Resource[] 并注入
         factory.setMapperLocations(
                 new PathMatchingResourcePatternResolver().getResources(mapperLocations));
 
@@ -101,9 +99,9 @@ public class SpringConfig {
     }
 
     /**
-     * 蹇呴』 static銆侻apperScannerConfigurer 鏄?BeanDefinitionRegistryPostProcessor锛?
-     * 鑻ュ０鏄庝负闈?static @Bean锛屼細杩娇 SpringConfig 鍦ㄥ悗缃鐞嗗櫒闃舵琚彁鍓嶅疄渚嬪寲锛?
-     * 瀵艰嚧 @Value 瀛楁鏉ヤ笉鍙婃敞鍏ワ紙maxActive 绛変繚鎸侀粯璁ゅ€?0锛夈€?
+     * 必须 static。MapperScannerConfigurer 是 BeanDefinitionRegistryPostProcessor，
+     * 若声明为非 static @Bean，会迫使 SpringConfig 在后置处理器阶段被提前实例化，
+     * 导致 @Value 字段来不及注入（maxActive 等保持默认值 0）。
      */
     @Bean
     public static MapperScannerConfigurer mapperScannerConfigurer() {
@@ -113,12 +111,10 @@ public class SpringConfig {
         return scanner;
     }
 
-    // ==================== 浜嬪姟绠＄悊鍣?====================
+    // ==================== 事务管理器 ====================
 
     @Bean
     public DataSourceTransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 }
-
-

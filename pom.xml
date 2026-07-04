@@ -16,7 +16,9 @@
     <!-- ==================== 版本统一管理 ==================== -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
 
         <!-- Spring 版本 -->
         <spring.version>5.3.30</spring.version>
@@ -266,18 +268,18 @@
                 <version>3.4.0</version>
             </plugin>
 
-            <!-- Tomcat7 Maven 插件（内置 Tomcat，直接运行项目） -->
+            <!-- Jetty Maven 插件（内置 Jetty，直接运行项目） -->
             <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.4.53.v20231009</version>
                 <configuration>
-                    <!-- 端口号 -->
-                    <port>8080</port>
-                    <!-- 访问路径：http://localhost:8080/ -->
-                    <path>/</path>
-                    <!-- URI 编码 -->
-                    <uriEncoding>UTF-8</uriEncoding>
+                    <httpConnector>
+                        <port>8080</port>
+                    </httpConnector>
+                    <webApp>
+                        <contextPath>/</contextPath>
+                    </webApp>
                 </configuration>
             </plugin>
         </plugins>

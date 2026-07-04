@@ -1,4 +1,4 @@
-﻿package com.attendance.controller;
+package com.attendance.controller;
 
 import com.attendance.common.Result;
 import com.attendance.entity.OvertimeRequest;
@@ -6,8 +6,8 @@ import com.attendance.service.OvertimeRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/overtime")
@@ -16,52 +16,42 @@ public class OvertimeRequestController {
     @Autowired
     private OvertimeRequestService overtimeRequestService;
 
-    /** 提交加班申请 */
     @PostMapping("/submit")
-    public Result submit(@RequestAttribute("currentUserId") Long userId,
-                         @RequestBody OvertimeRequest request) {
+    public Result<Void> submit(@RequestBody OvertimeRequest request, HttpServletRequest httpRequest) {
+        Integer userId = getCurrentUserId(httpRequest);
         request.setUserId(userId);
-        OvertimeRequest saved = overtimeRequestService.submit(request);
-        return Result.success("提交成功", saved);
+        overtimeRequestService.submit(request);
+        return Result.success(null);
     }
 
-    /** 审批加班（管理员） */
-    @PostMapping("/approve/{id}")
-    public Result approve(@PathVariable Long id,
-                          @RequestAttribute("currentUserId") Long approverId,
-                          @RequestParam boolean approved,
-                          @RequestParam(required = false) String rejectReason) {
-        overtimeRequestService.approve(id, approverId, approved, rejectReason);
-        return Result.success(approved ? "已通过" : "已拒绝");
+    @PutMapping("/approve")
+    public Result<Void> approve(@RequestBody OvertimeRequest request, HttpServletRequest httpRequest) {
+        Integer approverId = getCurrentUserId(httpRequest);
+        overtimeRequestService.approve(request.getId(), request.getStatus(), null, approverId, null);
+        return Result.success(null);
     }
 
-    /** 我的加班记录 */
-    @GetMapping("/my-records")
-    public Result myRecords(@RequestAttribute("currentUserId") Long userId) {
-        return Result.success(overtimeRequestService.getMyRecords(userId));
+    @GetMapping("/my")
+    public Result<List<OvertimeRequest>> myRequests(HttpServletRequest httpRequest) {
+        Integer userId = getCurrentUserId(httpRequest);
+        return Result.success(overtimeRequestService.getByUserId(userId));
     }
 
-    /** 待审批列表（管理员） */
+    private Integer getCurrentUserId(HttpServletRequest request) {
+        Object userIdObj = request.getAttribute("currentUserId");
+        if (userIdObj instanceof Integer) {
+            return (Integer) userIdObj;
+        }
+        return ((Long) userIdObj).intValue();
+    }
+
+    @GetMapping("/list")
+    public Result<List<OvertimeRequest>> list() {
+        return Result.success(overtimeRequestService.getAll());
+    }
+
     @GetMapping("/pending")
-    public Result pending(@RequestAttribute("currentUserId") Long userId) {
-        return Result.success(overtimeRequestService.getPending(userId));
-    }
-
-    /** 所有加班记录（管理员） */
-    @GetMapping("/all")
-    public Result all(@RequestParam(defaultValue = "1") int page,
-                      @RequestParam(defaultValue = "10") int pageSize) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("list", overtimeRequestService.getAll(page, pageSize));
-        data.put("total", overtimeRequestService.countAll());
-        data.put("page", page);
-        data.put("pageSize", pageSize);
-        return Result.success(data);
-    }
-
-    /** 获取加班详情 */
-    @GetMapping("/{id}")
-    public Result getById(@PathVariable Long id) {
-        return Result.success(overtimeRequestService.getById(id));
+    public Result<List<OvertimeRequest>> pending() {
+        return Result.success(overtimeRequestService.getByStatus("待审批"));
     }
 }

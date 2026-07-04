@@ -1,52 +1,24 @@
 package com.attendance.service;
 
 import com.attendance.entity.User;
-import com.attendance.exception.BusinessException;
-import com.attendance.mapper.UserMapper;
-import com.attendance.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
-@Service
-public class UserService {
+public interface UserService {
 
-    @Autowired
-    private UserMapper userMapper;
+    Map<String, Object> login(String username, String password);
 
-    public User login(String username, String password) {
-        User user = userMapper.selectByUsername(username);
-        if (user == null) {
-            throw new BusinessException("用户名或密码错误");
-        }
-        if (user.getStatus() != null && user.getStatus() == 0) {
-            throw new BusinessException("账号已被禁用，请联系管理员");
-        }
-        String encrypted = DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8));
-        if (!encrypted.equals(user.getPassword())) {
-            throw new BusinessException("用户名或密码错误");
-        }
-        return user;
-    }
+    User register(String username, String password, String realName, String phone);
 
-    public void register(User user) {
-        User exist = userMapper.selectByUsername(user.getUsername());
-        if (exist != null) {
-            throw new BusinessException("用户名已存在");
-        }
-        user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes(StandardCharsets.UTF_8)));
-        if (user.getRole() == null) user.setRole(0);
-        if (user.getStatus() == null) user.setStatus(1);
-        userMapper.insert(user);
-    }
+    User getUserByUsername(String username);
 
-    public User getById(Long id) {
-        return userMapper.selectById(id);
-    }
+    User getUserById(Integer id);
 
-    public String generateToken(User user) {
-        return JwtUtil.generateToken(user.getId(), user.getUsername());
-    }
+    java.util.List<User> getAllUsers();
+
+    void addUser(User user);
+
+    void updateUser(User user);
+
+    void deleteUser(Integer id);
 }

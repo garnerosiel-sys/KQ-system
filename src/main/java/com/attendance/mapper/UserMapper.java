@@ -1,11 +1,20 @@
 package com.attendance.mapper;
 
 import com.attendance.entity.User;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface UserMapper {
-    User selectByUsername(@Param("username") String username);
-    User selectById(@Param("id") Long id);
-    int insert(User user);
-    int updateById(User user);
+
+    User selectByUsername(String username);
+
+    User selectById(Integer id);
+
+    void insert(User user);
+
+    void update(User user);
+
+    void deleteById(Integer id);
+
+    java.util.List<User> selectAll();
 }
