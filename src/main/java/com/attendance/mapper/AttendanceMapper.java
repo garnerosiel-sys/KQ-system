@@ -11,4 +11,6 @@ public interface AttendanceMapper {
     List<Attendance> selectByUserIdAndDate(@Param("userId") Long userId, @Param("date") String date);
     List<Attendance> selectAll(@Param("offset") int offset, @Param("limit") int limit);
     int countAll();
+    Attendance selectById(@Param("id") Long id);
+    int updateById(Attendance attendance);
 }

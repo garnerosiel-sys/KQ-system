@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.attendance.mapper.MakeupRequestMapper">
+
+    <resultMap id="makeupRequestMap" type="com.attendance.entity.MakeupRequest">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="sourceDate" column="source_date"/>
+        <result property="targetDate" column="target_date"/>
+        <result property="reason" column="reason"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="rejectReason" column="reject_reason"/>
+        <result property="approverId" column="approver_id"/>
+        <result property="approveTime" column="approve_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.attendance.entity.MakeupRequest" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_makeup_request (user_id, source_date, target_date, reason, type, status, create_time, update_time)
+        VALUES (#{userId}, #{sourceDate}, #{targetDate}, #{reason}, #{type}, 0, NOW(), NOW())
+    </insert>
+
+    <update id="updateById" parameterType="com.attendance.entity.MakeupRequest">
+        UPDATE t_makeup_request SET
+            status = #{status},
+            reject_reason = #{rejectReason},
+            approver_id = #{approverId},
+            approve_time = NOW(),
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="makeupRequestMap">
+        SELECT * FROM t_makeup_request WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" resultMap="makeupRequestMap">
+        SELECT * FROM t_makeup_request WHERE user_id = #{userId} ORDER BY create_time DESC
+    </select>
+
+    <select id="selectPending" resultMap="makeupRequestMap">
+        SELECT * FROM t_makeup_request WHERE status = 0 ORDER BY create_time ASC
+    </select>
+
+    <select id="selectAll" resultMap="makeupRequestMap">
+        SELECT * FROM t_makeup_request ORDER BY create_time DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM t_makeup_request
+    </select>
+
+</mapper>

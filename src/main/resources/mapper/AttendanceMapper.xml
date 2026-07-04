@@ -38,4 +38,15 @@
         SELECT COUNT(*) FROM t_attendance
     </select>
 
+    <select id="selectById" resultMap="attendanceMap">
+        SELECT * FROM t_attendance WHERE id = #{id}
+    </select>
+
+    <update id="updateById" parameterType="com.attendance.entity.Attendance">
+        UPDATE t_attendance SET
+            status = #{status},
+            remark = #{remark}
+        WHERE id = #{id}
+    </update>
+
 </mapper>

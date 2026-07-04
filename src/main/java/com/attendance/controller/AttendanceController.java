@@ -54,4 +54,27 @@ public class AttendanceController {
         data.put("pageSize", pageSize);
         return Result.success(data);
     }
+    /** 获取考勤详情 */
+    @GetMapping("/{id}")
+    public Result getById(@PathVariable Long id) {
+        return Result.success(attendanceService.getById(id));
+    }
+
+    /** 补卡申请（管理员） */
+    @PostMapping("/makeup")
+    public Result makeup(@RequestAttribute("currentUserId") Long userId,
+                         @RequestParam Long recordId,
+                         @RequestParam String remark) {
+        attendanceService.makeup(recordId, userId, remark);
+        return Result.success("补卡成功");
+    }
+
+    /** 修改打卡记录状态（管理员） */
+    @PostMapping("/update-status")
+    public Result updateStatus(@RequestParam Long id,
+                                @RequestParam Integer status,
+                                @RequestParam(required = false) String remark) {
+        attendanceService.updateStatus(id, status, remark);
+        return Result.success("更新成功");
+    }
 }

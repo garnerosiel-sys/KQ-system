@@ -92,4 +92,34 @@ public class AttendanceService {
     public int countAll() {
         return attendanceMapper.countAll();
     }
+
+    /** 获取单条考勤记录 */
+    public Attendance getById(Long id) {
+        return attendanceMapper.selectById(id);
+    }
+
+    /** 补卡（仅管理员可操作） */
+    public void makeup(Long recordId, Long userId, String remark) {
+        Attendance record = attendanceMapper.selectById(recordId);
+        if (record == null) {
+            throw new BusinessException("记录不存在");
+        }
+        record.setStatus(1);
+        record.setRemark(remark != null ? remark : "管理员补卡");
+        attendanceMapper.updateById(record);
+    }
+
+    /** 更新打卡状态 */
+    public void updateStatus(Long id, Integer status, String remark) {
+        Attendance record = attendanceMapper.selectById(id);
+        if (record == null) {
+            throw new BusinessException("记录不存在");
+        }
+        record.setStatus(status);
+        if (remark != null) {
+            record.setRemark(remark);
+        }
+        attendanceMapper.updateById(record);
+    }
+
 }

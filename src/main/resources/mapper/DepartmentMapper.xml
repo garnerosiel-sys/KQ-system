@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.attendance.mapper.DepartmentMapper">
+
+    <resultMap id="departmentMap" type="com.attendance.entity.Department">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.attendance.entity.Department" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_department (name, parent_id, sort_order, status, create_time, update_time)
+        VALUES (#{name}, #{parentId}, #{sortOrder}, 1, NOW(), NOW())
+    </insert>
+
+    <update id="updateById" parameterType="com.attendance.entity.Department">
+        UPDATE t_department SET
+            name = #{name},
+            parent_id = #{parentId},
+            sort_order = #{sortOrder},
+            status = #{status},
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_department WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="departmentMap">
+        SELECT * FROM t_department WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="departmentMap">
+        SELECT * FROM t_department ORDER BY sort_order ASC
+    </select>
+
+    <select id="selectByParentId" resultMap="departmentMap">
+        SELECT * FROM t_department WHERE parent_id = #{parentId} ORDER BY sort_order ASC
+    </select>
+
+</mapper>
