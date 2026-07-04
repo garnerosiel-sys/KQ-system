@@ -1,5 +1,6 @@
 package com.attendance.controller;
 
+import com.attendance.annotation.RequireRole;
 import com.attendance.common.Result;
 import com.attendance.entity.User;
 import com.attendance.service.UserService;
@@ -65,28 +66,33 @@ public class UserController {
     }
 
     @GetMapping("/user/list")
+    @RequireRole("admin")
     public Result userList() {
         return Result.success(userService.getAllUsers());
     }
 
     @GetMapping("/user/{id}")
+    @RequireRole("admin")
     public Result getUser(@PathVariable Integer id) {
         return Result.success(userService.getUserById(id));
     }
 
     @PostMapping("/user/add")
+    @RequireRole("admin")
     public Result addUser(@RequestBody User user) {
         userService.addUser(user);
         return Result.success("添加成功");
     }
 
     @PutMapping("/user/update")
+    @RequireRole("admin")
     public Result updateUser(@RequestBody User user) {
         userService.updateUser(user);
         return Result.success("更新成功");
     }
 
     @DeleteMapping("/user/{id}")
+    @RequireRole("admin")
     public Result deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         return Result.success("删除成功");
