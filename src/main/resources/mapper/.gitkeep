@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- Mapper XML 占位文件，后续在此目录下创建各模块的 Mapper 文件 -->
+<mapper namespace="com.attendance.mapper.placeholder">
+
+</mapper>

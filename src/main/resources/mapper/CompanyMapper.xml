@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.attendance.mapper.CompanyMapper">
+
+    <resultMap id="companyMap" type="com.attendance.entity.Company">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="centerLatitude" column="center_latitude"/>
+        <result property="centerLongitude" column="center_longitude"/>
+        <result property="radius" column="radius"/>
+        <result property="address" column="address"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectDefault" resultMap="companyMap">
+        SELECT * FROM company LIMIT 1
+    </select>
+
+    <insert id="insert" parameterType="com.attendance.entity.Company" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO company (name, center_latitude, center_longitude, radius, address, create_time)
+        VALUES (#{name}, #{centerLatitude}, #{centerLongitude}, #{radius}, #{address}, #{createTime})
+    </insert>
+
+    <update id="update" parameterType="com.attendance.entity.Company">
+        UPDATE company SET
+            name = #{name},
+            center_latitude = #{centerLatitude},
+            center_longitude = #{centerLongitude},
+            radius = #{radius},
+            address = #{address}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
