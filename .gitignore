@@ -3,3 +3,7 @@ target/
 *.iml
 .vscode/
 *.log
+# H2 嵌入式数据库文件
+data/
+# Maven Wrapper 下载的 jar（无需提交，mvnw 会自动下载）
+.mvn/wrapper/maven-wrapper.jar

@@ -16,8 +16,9 @@ import com.attendance.mapper.CompanyMapper;
 import com.attendance.mapper.DepartmentMapper;
 import com.attendance.mapper.UserMapper;
 
+import javax.sql.DataSource;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -41,6 +42,9 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     @Autowired
     private AttendanceRuleMapper attendanceRuleMapper;
 
+    @Autowired
+    private DataSource dataSource;
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (initialized) {
@@ -57,12 +61,7 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
         try {
             // 尝试连接业务数据库
             if (!tryConnectBusinessDB()) {
-                log.error("无法连接到业务数据库，请检查 MySQL 配置");
-                log.error("常见原因：");
-                log.error("1. MySQL 服务未启动");
-                log.error("2. root 用户密码错误");
-                log.error("3. 防火墙阻止了连接");
-
+                log.error("无法连接到数据库，请检查配置");
                 // 如果连接失败，只记录错误，不阻止应用启动
                 log.warn("应用将跳过数据库初始化，请手动创建数据库和表");
                 return;
@@ -88,31 +87,13 @@ public class DatabaseInitializer implements ApplicationListener<ContextRefreshed
     }
 
     private boolean tryConnectBusinessDB() {
-        String[] possiblePasswords = {"root", "123456", "", "password"};
-
-        for (String password : possiblePasswords) {
-            try {
-                log.info("尝试连接数据库，密码长度: " + (password == null ? 0 : password.length()));
-
-                String url = "jdbc:mysql://localhost:3306/attendance_system?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true";
-                Connection conn = DriverManager.getConnection(url, "root", password);
-
-                log.info("数据库连接成功！");
-                conn.close();
-
-                // 如果密码不是配置文件中的，需要更新配置
-                if (!"root".equals(password)) {
-                    log.warn("检测到使用密码: " + (password.isEmpty() ? "空密码" : password));
-                    log.warn("建议更新 application.properties 中的 jdbc.password");
-                }
-
-                return true;
-            } catch (SQLException e) {
-                log.info("密码尝试失败: " + (password.isEmpty() ? "空密码" : password));
-            }
+        try (Connection conn = dataSource.getConnection()) {
+            log.info("数据库连接成功！(通过 Spring DataSource)");
+            return true;
+        } catch (SQLException e) {
+            log.error("无法连接到数据库: {}", e.getMessage());
+            return false;
         }
-
-        return false;
     }
 
     private boolean checkTablesExist() {

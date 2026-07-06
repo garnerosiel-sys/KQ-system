@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 
 /**
  * Spring 根容器配置（替代 applicationContext.xml）
@@ -61,6 +62,7 @@ public class SpringConfig {
     // ==================== Druid 数据源 ====================
 
     @Bean
+    @Profile("!h2")
     public DataSource dataSource() {
         DruidDataSource ds = new DruidDataSource();
         ds.setDriverClassName(driverClassName);

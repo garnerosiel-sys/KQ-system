@@ -16,9 +16,9 @@
     <!-- ==================== 版本统一管理 ==================== -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
 
         <!-- Spring 版本 -->
         <spring.version>5.3.30</spring.version>
@@ -145,6 +145,14 @@
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>${mysql.version}</version>
+        </dependency>
+
+        <!-- H2 嵌入式数据库（无需安装 MySQL 即可运行） -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Druid 数据库连接池 -->
